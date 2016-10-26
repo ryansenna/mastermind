@@ -5,11 +5,8 @@
  */
 package fxcontrollers;
 
-import client.ConfigBean;
 import client.MMClient;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TabPane;
@@ -29,39 +26,35 @@ import javafx.scene.shape.Circle;
  */
 public class GamePageController {
 
-    //FXML fixed colors on the right side of the Controller
     @FXML
-    private Circle rose;
+    private Circle blue;
     @FXML
     private Circle brown;
     @FXML
-    private Circle orange;
-    @FXML
-    private Circle green;
-    @FXML
-    private Circle purple;
-    @FXML
-    private Circle yellow;
-    @FXML
-    private Circle red;
-    @FXML
-    private Circle blue;
-
-    // The GridPane of the page.
+    private TextField displayMessage;
     @FXML
     private GridPane gp;
     @FXML
-    private GridPane gpConnect;
+    private Circle green;
     @FXML
-    private TabPane tabs;
+    private Circle orange;
+    @FXML
+    private Circle purple;
+    @FXML
+    private Circle red;
+    @FXML
+    private Circle rose;
     @FXML
     private TextField serverNum;
     @FXML
-    private TextField displayMessage;
+    private TabPane tabs;
+    @FXML
+    private Circle yellow;
 
-    private HBox currentRow, currentHintRow;// to keep track of each row
-    private Circle currentChoice;// to keep track of the color choice.
     private MMClient client = new MMClient();
+    private Circle currentChoice;// to keep track of the color choice.
+    private HBox currentHintRow;
+    private HBox currentRow;
     private int rowNum = 11;// the starting row number.
 
     /**
@@ -73,7 +66,8 @@ public class GamePageController {
      */
     @FXML
     public void handleColorClicked(MouseEvent event) {
-
+        //disable give up during the pick
+        getCurrentRow(12, 1).setDisable(true);
         if (event.getSource() == rose) {
             currentChoice = rose;
         } else if (event.getSource() == brown) {
@@ -92,59 +86,21 @@ public class GamePageController {
             currentChoice = blue;
         }
     }
-
     /**
-     * This method takes care of assigning the current choice of the user to the
-     * code answer set.
-     *
-     * @param event
+     * This Method welcomes and tries to connect to the server
+     * when the user clicks
      */
     @FXML
-    public void setColorPicked(MouseEvent event) {
-        Circle c = (Circle) event.getSource();
-        c.setFill(currentChoice.getFill());
-    }
+    public void onEnterClicked() {
+        if (isIpNum() && connectToServer()) {
+            displayMessage.setText("Welcome to MasterMind Game!");
+            tabs.getTabs().get(1).setDisable(false);
+            tabs.getTabs().get(0).setDisable(true);
 
-    /**
-     * This method will be responsible for receiving a hint from the server and
-     * displaying to the user.
-     */
-    @FXML
-    public void receiveAnswers() {
-        //todo
-        try {
-            client.receiveHintFromServer();
-        } catch (Exception ex) {
-            //Logger.getLogger(GamePageController.class.getName()).log(Level.SEVERE, null, ex);
+        } else {
+            displayMessage.setText("Something went wrong. Try again :(");
         }
-    }
 
-    /**
-     * This method will set the Send button click. It will find the current row
-     * in which is dealing with, transcript the colors guess from the user to a
-     * string then send to the server.
-     */
-    @FXML
-    public void onSendBtnClick() {
-        currentRow = getCurrentRow(rowNum, 1);
-        Circle[] currentRowCircles = getCurrentRowCircles(currentRow);
-        if (isAFullAnswer(currentRowCircles)) {
-            int[] code = getIntValuesFromCurrentRow(currentRowCircles);
-
-            String guess = "";
-
-            for (int i = 0; i < code.length; i++) {
-                guess += code[i];
-            }
-            int nextRow = rowNum - 1;
-            currentRow.setDisable(true);// disables the current working row
-            getCurrentRow(nextRow, 1).setDisable(false);// enable the next row.
-
-            if (client.sendGuess(guess)) {
-                setHints();
-                rowNum--;
-            }
-        }
     }
 
     /**
@@ -163,6 +119,9 @@ public class GamePageController {
         getCurrentRow(12, 1).setDisable(true);
         //disable Send Btn.
         getCurrentRow(12, 2).setDisable(true);
+        client.sendGuess(new int[]{9, 1, 1, 1});
+        getCurrentRow(12, 3).setDisable(false);
+
     }
 
     /**
@@ -170,128 +129,104 @@ public class GamePageController {
      */
     @FXML
     public void onNewGameClicked() {
-
         //hide the answer
         getCurrentRow(1, 1).setVisible(false);
-        //enable give up btn
-        getCurrentRow(12, 1).setDisable(false);
         //enable send btn
         getCurrentRow(12, 2).setDisable(false);
         // set row to be initial
         rowNum = 11;
         // set all rows to be color Dodger blue
         for (int i = 2; i <= 11; i++) {
+            HBox thisRow = getCurrentRow(i, 1);
             //repaint everything
             Circle[] currentRowCircles
-                    = getCurrentRowCircles(getCurrentRow(i, 1));
+                    = getCurrentRowCircles(thisRow);
             for (int j = 0; j < 4; j++) {
                 currentRowCircles[j].setFill(Color.DODGERBLUE);
             }
+            thisRow.setDisable(true);
         }
+        // set all hints to be color Dodger blue
+        for (int i = 2; i <= 11; i++) {
+            HBox thisRow = getCurrentRow(i, 2);
+            //repaint everything
+            Circle[] currentRowCircles
+                    = getCurrentRowCircles(thisRow);
+            for (int j = 0; j < 4; j++) {
+                currentRowCircles[j].setFill(Color.DODGERBLUE);
+            }
+            thisRow.setVisible(false);
+        }
+
         //renable first row
         getCurrentRow(11, 1).setDisable(false);
-        client.sendGuess("9999");
+
+        client.sendGuess(new int[]{9, 9, 9, 9});
+        setSecretCode();
+        getCurrentRow(12, 3).setDisable(true);
         //set hidden answer
         //setHiddenAnswer();
     }
 
+    /**
+     * This method will set the Send button click. It will find the current row
+     * in which is dealing with, transcript the colors guess from the user to a
+     * string then send to the server.
+     */
     @FXML
-    public void onEnterClicked() {
-        if (isIpNum() && connectToServer()) {
-            displayMessage.setText("Welcome to MasterMind Game. I dare you to beat what is on my mind. Go!");
-            tabs.getTabs().get(1).setDisable(false);
-        } else {
-            displayMessage.setText("Something went wrong. Try again :(");
+    public void onSendBtnClick() {
+        currentRow = getCurrentRow(rowNum, 1);
+        Circle[] currentRowCircles = getCurrentRowCircles(currentRow);
+        if (isAFullAnswer(currentRowCircles)) {
+            int[] guess = getIntValuesFromCurrentRow(currentRowCircles);
+
+            int nextRow = rowNum - 1;
+            currentRow.setDisable(true);// disables the current working row
+            getCurrentRow(nextRow, 1).setDisable(false);// enable the next row.
+
+            if (client.sendGuess(guess)) {
+                //enable give up btn after sending a guess.
+                getCurrentRow(12, 1).setDisable(false);
+                setHints();
+                rowNum--;
+
+            }
         }
     }
 
     /**
-     * This method transcripts the color values to int values.
-     *
-     * @param currentRowCircles
-     * @return
+     * This method will be responsible for receiving a hint from the server and
+     * displaying to the user.
      */
-    private int[] getIntValuesFromCurrentRow(Circle[] currentRowCircles) {
-        int[] array = new int[4];
-
-        for (int i = 0; i < 4; i++) {
-            array[i] = switchToInt(currentRowCircles[i].getFill());
+    @FXML
+    public void receiveAnswers() {
+        //todo
+        try {
+            client.receiveHintFromServer();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        return array;
     }
 
     /**
-     * This is the witch table for ints and colors.
+     * This method takes care of assigning the current choice of the user to the
+     * code answer set.
      *
-     * @param circleColor
+     * @param event
+     */
+    @FXML
+    public void setColorPicked(MouseEvent event) {
+        Circle c = (Circle) event.getSource();
+        c.setFill(currentChoice.getFill());
+    }
+
+    /**
+     * This method is responsible for connecting the client to the server.
+     *
      * @return
      */
-    private int switchToInt(Paint circleColor) {
-
-        if (circleColor == Color.BLUE) {
-            return 1;
-        }
-        if (circleColor == Color.RED) {
-            return 2;
-        }
-        if (circleColor == Color.YELLOW) {
-            return 3;
-        }
-        if (circleColor == Color.PURPLE) {
-            return 4;
-        }
-        if (circleColor == Color.GREEN) {
-            return 5;
-        }
-        if (circleColor == Color.ORANGE) {
-            return 6;
-        }
-        if (circleColor == Color.BROWN) {
-            return 7;
-        }
-        if (circleColor == Color.PINK) {
-            return 8;
-        }
-        return 0;
-    }
-
-    private Color switchToColor(int n) {
-        if (n == 1) {
-            return Color.BLUE;
-        }
-        if (n == 2) {
-            return Color.RED;
-        }
-        if (n == 3) {
-            return Color.YELLOW;
-        }
-        if (n == 4) {
-            return Color.PURPLE;
-        }
-        if (n == 5) {
-            return Color.GREEN;
-        }
-        if (n == 6) {
-            return Color.ORANGE;
-        }
-        if (n == 7) {
-            return Color.BROWN;
-        }
-        if (n == 8) {
-            return Color.PINK;
-        }
-
-        return Color.DODGERBLUE;
-    }
-    
-    private Color switchToColorForHint(int n)
-    {
-        if(n == 1)
-            return Color.BLACK;
-        if(n == 0)
-            return Color.WHITE;
-        return Color.DODGERBLUE;
+    private boolean connectToServer() {
+        return client.getConnection();
     }
 
     /**
@@ -333,6 +268,22 @@ public class GamePageController {
     }
 
     /**
+     * This method transcripts the color values to int values.
+     *
+     * @param currentRowCircles
+     * @return
+     */
+    private int[] getIntValuesFromCurrentRow(Circle[] currentRowCircles) {
+        int[] array = new int[4];
+
+        for (int i = 0; i < 4; i++) {
+            array[i] = switchToInt(currentRowCircles[i].getFill());
+        }
+
+        return array;
+    }
+
+    /**
      * This method checks if the circle row is a full answer meaning that if the
      * user left the color row being the default, his guess will not get into
      * account.
@@ -349,6 +300,11 @@ public class GamePageController {
         return true;
     }
 
+    /**
+     * This method does a short data validation for entering an ip number.
+     *
+     * @return
+     */
     private boolean isIpNum() {
 
         String ipNum = serverNum.getText();
@@ -374,56 +330,165 @@ public class GamePageController {
         return true;
     }
 
-    private String setSecretCode() {
-
-        HBox thisRow = getCurrentRow(11, 1);
-        Circle[] thisRowCircles = getCurrentRowCircles(currentRow);
-
-        int[] code = getIntValuesFromCurrentRow(thisRowCircles);
-        String guess = "";
-
-        for (int i = 0; i < code.length; i++) {
-            guess += code[i];
-        }
-        int guessInt = Integer.parseInt(guess);
-
-        if (guessInt == 1585) // << DEVELOPER CODE. TESTING FINAL ANSWER.
-        {
-            //set the message to be sent to the server here.
-        }
-
-        return guess;
-
-    }
-
-    private boolean connectToServer() {
-        return client.getConnection();
-    }
-
+    /**
+     * This helper method will paint the hints into the view.
+     */
     private void setHints() {
         // get the first HBox
         currentHintRow = getCurrentRow(rowNum, 2);
         //enable it
         currentHintRow.setDisable(false);
+        //make it visible
         currentHintRow.setVisible(true);
-        
+
         // get the content of it
         Circle[] currentRowCircles = getCurrentRowCircles(currentHintRow);
 
         //get hint code from server
-        String a = "";
+        int[] ansFromServer = new int[4];
         try {
-            a = client.receiveHintFromServer();
+            ansFromServer = client.receiveHintFromServer();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        int c;
-
-        for (int i = 0; i < 4; i++) {
-            c = (int) a.charAt(i);
-            currentRowCircles[i].setFill(switchToColorForHint(c));// assign a color to each.
+        int winCodeCount = 0;
+        int loseCodeCount = 0;
+        for (int i = 0; i < ansFromServer.length; i++) {
+            if (ansFromServer[i] == 7) {
+                winCodeCount++;
+            }
+            if (ansFromServer[i] == 8) {
+                loseCodeCount++;
+            }
+            currentRowCircles[i].
+                    setFill(switchToColorForHint(ansFromServer[i]));
         }
 
+        if (winCodeCount == 4 || loseCodeCount == 4) {
+            getCurrentRow(1, 1).setVisible(true);// make the secret code visible
+            getCurrentRow(12, 1).setDisable(true);// disable give up
+            getCurrentRow(12, 2).setDisable(true);// disable send
+            getCurrentRow(12, 3).setDisable(false);//enable new game
+        }
+
+    }
+
+    /**
+     * This helper method sets the secret code from the server hidden in the
+     * view.
+     */
+    private void setSecretCode() {
+        int[] secretCode = new int[4];
+        try {
+            secretCode = client.receiveHintFromServer();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        HBox thisRow = getCurrentRow(1, 1);
+        Circle[] thisRowCircles = getCurrentRowCircles(thisRow);
+
+        setSecretCodeInView(thisRowCircles, secretCode);
+    }
+
+    /**
+     * This Method will paint the secret code in hte view.
+     *
+     * @param thisRowCircles
+     * @param digits
+     */
+    private void setSecretCodeInView(Circle[] thisRowCircles, int[] digits) {
+        int j = 0;
+        for (int i = 3; i >= 0; i--) {
+            thisRowCircles[i].setFill(switchToColor(digits[j]));
+            j++;
+        }
+    }
+
+    /**
+     * This helper method switches int values to color values.
+     *
+     * @param n
+     * @return
+     */
+    private Color switchToColor(int n) {
+        if (n == 1) {
+            return Color.BLUE;
+        }
+        if (n == 2) {
+            return Color.RED;
+        }
+        if (n == 3) {
+            return Color.YELLOW;
+        }
+        if (n == 4) {
+            return Color.PURPLE;
+        }
+        if (n == 5) {
+            return Color.GREEN;
+        }
+        if (n == 6) {
+            return Color.ORANGE;
+        }
+        if (n == 7) {
+            return Color.BROWN;
+        }
+        if (n == 8) {
+            return Color.PINK;
+        }
+
+        return Color.DODGERBLUE;
+    }
+
+    /**
+     * This helper method switches the int numbers from the hints to colors.
+     *
+     * @param n
+     * @return
+     */
+    private Color switchToColorForHint(int n) {
+        if (n == 1) {
+            return Color.BLACK;
+        }
+        if (n == 2) {
+            return Color.AQUA;
+        }
+        return Color.DODGERBLUE;
+    }
+
+    /**
+     * This is the witch table for ints and colors.
+     *
+     * @param circleColor
+     * @return
+     */
+    private int switchToInt(Paint circleColor) {
+
+        if (circleColor == Color.BLUE) {
+            return 1;
+        }
+        if (circleColor == Color.RED) {
+            return 2;
+        }
+        if (circleColor == Color.YELLOW) {
+            return 3;
+        }
+        if (circleColor == Color.PURPLE) {
+            return 4;
+        }
+        if (circleColor == Color.GREEN) {
+            return 5;
+        }
+        if (circleColor == Color.ORANGE) {
+            return 6;
+        }
+        if (circleColor == Color.BROWN) {
+            return 7;
+        }
+        if (circleColor == Color.PINK) {
+            return 8;
+        }
+        return 0;
     }
 
 }

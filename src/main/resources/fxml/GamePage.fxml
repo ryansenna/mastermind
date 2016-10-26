@@ -56,7 +56,7 @@
                   </HBox>
                   <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
                      <children>
-                        <TextField fx:id="displayMessage" prefHeight="180.0" prefWidth="225.0" />
+                        <TextField fx:id="displayMessage" editable="false" prefHeight="180.0" prefWidth="225.0" />
                      </children>
                   </HBox>
                </children>

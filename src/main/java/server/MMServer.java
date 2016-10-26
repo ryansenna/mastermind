@@ -23,7 +23,8 @@ public class MMServer {
      */
     private void createServerSocket() throws IOException{
         ServerSocket sSocket=new ServerSocket(portNumber);
-        System.out.println(sSocket.getInetAddress().getLocalHost().getHostAddress());
+        System.out.println(sSocket.getInetAddress().
+                getLocalHost().getHostAddress());
         
         while(true){
             Socket cSocket=sSocket.accept();

@@ -32,28 +32,17 @@ public class MMClient {
     public MMClient(ConfigBean configurationsForServer) {
         this.configForServer = configurationsForServer;
     }
-
     /**
-     * The method will take a guess from the app, convert to bytes and send to
-     * the server.
+     * This method will try to get a connection to the server.
      *
-     * @param guess the user's guess.
-     * @throws IOException
+     * @return
      */
-    public boolean sendGuess(String guess) {
-
-        List<Integer> guessList = new ArrayList<>(4);
-        //converts the guess string into a list of integers
-        for (int i = 0; i < guess.length(); i++) {
-            int digit = Integer.parseInt(guess.substring(i, i + 1));
-            guessList.add(digit);
-        }
-
-        guessBuffer = MMPacket.writeBytes(guessList);
+    public boolean getConnection() {
+        String serverNum = configForServer.getServerNumber();
+        int serverPort = 50000;
         try {
-            OutputStream out = socket.getOutputStream();
-            //send to the server.
-            out.write(guessBuffer);
+            this.socket = new Socket(serverNum, serverPort);
+            // send the request start message here !
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,7 +57,7 @@ public class MMClient {
      * @return the server answer.
      * @throws IOException
      */
-    public String receiveHintFromServer() throws IOException {
+    public int[] receiveHintFromServer() throws IOException {
         if (guessBuffer == null || socket == null) {
             throw new NullPointerException(
                     "You must send a guess before"
@@ -76,7 +65,6 @@ public class MMClient {
         }
 
         int totalBytesRcvd = 0, bytesRcvd;
-        // 50 will change when I see the server code.
         byte[] serverAnswer = new byte[4];
         InputStream in = socket.getInputStream();
         while (totalBytesRcvd < guessBuffer.length) {
@@ -92,24 +80,39 @@ public class MMClient {
         }
 
         //socket.close();
-
         //converts the received message into int value
         int message = MMPacket.readBytes(serverAnswer);
+        int[] digits = new int[4];
+        int count = 0;
+        while (message > 0) {
+            digits[count] = message % 10;
+            message = message / 10;
+            count++;
+        }
         System.out.println(message);
-        return message + "";
+        return digits;
     }
-
     /**
-     * This method will try to get a connection to the server.
+     * The method will take a guess from the app, convert to bytes and send to
+     * the server.
      *
-     * @return
+     * @param guess the user's guess.
+     * @throws IOException
      */
-    public boolean getConnection() {
-        String serverNum = configForServer.getServerNumber();
-        int serverPort = 50000;
+    public boolean sendGuess(int[] guess) {
+        
+        List<Integer> guessList = new ArrayList<>();
+        //converts the guess string into a list of integers
+        for (int i = 0; i < guess.length; i++) {
+            //int digit = Integer.parseInt(guess.substring(i, i + 1));
+            guessList.add(guess[i]);
+        }
+        
+        guessBuffer = MMPacket.writeBytes(guessList);
         try {
-            this.socket = new Socket(serverNum, serverPort);
-            // send the request start message here !
+            OutputStream out = socket.getOutputStream();
+            //send to the server.
+            out.write(guessBuffer);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
