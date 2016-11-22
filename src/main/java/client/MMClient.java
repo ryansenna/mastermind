@@ -32,22 +32,16 @@ public class MMClient {
     public MMClient(ConfigBean configurationsForServer) {
         this.configForServer = configurationsForServer;
     }
+
     /**
      * This method will try to get a connection to the server.
      *
      * @return
      */
-    public boolean getConnection() {
+    public void getConnection() throws IOException {
         String serverNum = configForServer.getServerNumber();
-        int serverPort = 50000;
-        try {
-            this.socket = new Socket(serverNum, serverPort);
-            // send the request start message here !
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        int serverPort = configForServer.getPortNum();
+        this.socket = new Socket(serverNum, serverPort);
     }
 
     /**
@@ -92,6 +86,7 @@ public class MMClient {
         System.out.println(message);
         return digits;
     }
+
     /**
      * The method will take a guess from the app, convert to bytes and send to
      * the server.
@@ -99,25 +94,23 @@ public class MMClient {
      * @param guess the user's guess.
      * @throws IOException
      */
-    public boolean sendGuess(int[] guess) {
-        
+    public void sendGuess(int[] guess) throws IOException {
+
         List<Integer> guessList = new ArrayList<>();
         //converts the guess string into a list of integers
         for (int i = 0; i < guess.length; i++) {
             //int digit = Integer.parseInt(guess.substring(i, i + 1));
             guessList.add(guess[i]);
         }
-        
+
         guessBuffer = MMPacket.writeBytes(guessList);
-        try {
-            OutputStream out = socket.getOutputStream();
-            //send to the server.
-            out.write(guessBuffer);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        OutputStream out = socket.getOutputStream();
+        //send to the server.
+        out.write(guessBuffer);
+    }
+
+    public void startNewGame() throws IOException {
+        
     }
 
 }

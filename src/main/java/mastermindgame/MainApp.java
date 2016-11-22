@@ -1,17 +1,19 @@
 package mastermindgame;
 
-import fxcontrollers.GamePageController;
+import fxcontrollers.FrontPageController;
+import fxcontrollers.NewGamePageController;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TabPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
 
-    private GamePageController gpc;
+    private NewGamePageController fpc;
     private Stage stage;
 
     public MainApp() {
@@ -23,8 +25,11 @@ public class MainApp extends Application {
 
         this.stage = stage;
         Scene scene2 = createGamePage();
+        Scene scene1 = createFrontPage(scene2);
 
-        this.stage.setScene(scene2);
+        this.stage.setScene(scene1);// set the front page.
+
+        this.stage.setTitle("Ryan's Mastermind Game");
 
         this.stage.show();
     }
@@ -41,21 +46,35 @@ public class MainApp extends Application {
         launch(args);
     }
 
+    private Scene createFrontPage(Scene scene2) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+
+        loader.setLocation(this.getClass().getResource("/fxml/FrontPage.fxml"));
+
+        Parent root = (GridPane) loader.load();
+
+        FrontPageController frontPageContr = loader.getController();
+        // set the references to the second page.
+        frontPageContr.setSceneStateSecPage(scene2, stage, fpc);
+
+        Scene scene = new Scene(root);
+        return scene;
+    }
+
     private Scene createGamePage() throws Exception {
         // Instantiate the FXMLLoader
         FXMLLoader loader = new FXMLLoader();
 
         // Set the location of the fxml file in the FXMLLoader
-        loader.setLocation(this.getClass().getResource("/fxml/GamePage.fxml"));
+        loader.setLocation(this.getClass().getResource("/fxml/NewGamePage.fxml"));
 
         // Parent is the base class for all nodes that have children in the
         // scene graph such as AnchorPane and most other containers
-        Parent root = (TabPane) loader.load();
+        Parent root = (BorderPane) loader.load();
 
-        gpc = loader.getController();
+        fpc = loader.getController();
         Scene scene = new Scene(root);
         return scene;
     }
-
 
 }

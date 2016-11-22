@@ -1,10 +1,10 @@
+fxcontrollers\NewGamePageController.class
 business\Board.class
 mastermindgame\MainApp.class
 server\MMServerApp.class
 server\MMPacket.class
 server\MMServer.class
 server\MMServerSession.class
-fxcontrollers\GamePageController.class
+fxcontrollers\FrontPageController.class
 client\MMClient.class
 client\ConfigBean.class
-fxcontrollers\ServerInputController.class
