@@ -110,7 +110,20 @@ public class MMClient {
     }
 
     public void startNewGame() throws IOException {
+        List<Integer> message = new ArrayList<>();
         
+        for(int i =0; i < 4; i++){
+            message.add(9);
+        }
+        
+        guessBuffer = MMPacket.writeBytes(message);
+        OutputStream out = socket.getOutputStream();
+        //send to the server.
+        out.write(guessBuffer);
+    }
+    
+    public void closeConnection() throws IOException{
+        this.socket.close();
     }
 
 }

@@ -49,9 +49,9 @@
       </HBox>
       <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="2">
          <children>
-            <Button fx:id="enter_btn" mnemonicParsing="false" onAction="#onEnterClicked" text="Enter">
+            <Button fx:id="enter_btn" defaultButton="true" mnemonicParsing="false" onAction="#onEnterClicked" text="Enter">
                <font>
-                  <Font name="Arial Bold" size="18.0" />
+                  <Font name="Arial" size="18.0" />
                </font>
             </Button>
          </children>

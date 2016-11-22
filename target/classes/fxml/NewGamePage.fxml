@@ -19,7 +19,7 @@
           <Menu mnemonicParsing="false" text="Menu">
             <items>
               <MenuItem mnemonicParsing="false" text="Close" />
-                  <MenuItem mnemonicParsing="false" text="New Game" />
+                  <MenuItem mnemonicParsing="false" onAction="#onNewGameClicked" text="New Game" />
                   <MenuItem mnemonicParsing="false" text="Give Up" />
             </items>
           </Menu>

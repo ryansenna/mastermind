@@ -50,12 +50,12 @@ public class FrontPageController {
 
     @FXML
     private void initialize() {
-        config = new ConfigBean(server_input.getText(), 50000);
-        client = new MMClient(config);
     }
 
     @FXML
     private void onEnterClicked(ActionEvent event) {
+        config = new ConfigBean(server_input.getText(), 50000);
+        client = new MMClient(config);
         try {
             client.getConnection();
             gpc.loadClient(client);// loads the client to the next page.
