@@ -74,7 +74,9 @@ public class MMPacket {
             //create a message accordingly
             else if (message.get(i) == -3) {
                 byteBuffer[i] = (byte) 0xFF;
-            } else if (message.get(i) == 9) {//all 9 means start a new game.
+            } else if (message.get(i) == 0) {//all 0 means start a new game.
+                byteBuffer[i] = (byte) 0x00;
+            }else if (message.get(i) == 9) {//all 9 means start a new dev game.
                 byteBuffer[i] = (byte) 0x09;
             }
         }

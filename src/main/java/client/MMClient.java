@@ -22,11 +22,16 @@ public class MMClient {
     private ConfigBean configForServer;
     private byte[] guessBuffer;
     private Socket socket;
+    private int totalBytesRcvd, bytesRcvd;
+    private byte[] serverAnswer;
 
     public MMClient() {
         configForServer = new ConfigBean();
         guessBuffer = null;
         socket = null;
+        totalBytesRcvd = 0;
+        bytesRcvd = 0;
+        serverAnswer = new byte[4];
     }
 
     public MMClient(ConfigBean configurationsForServer) {
@@ -45,21 +50,16 @@ public class MMClient {
     }
 
     /**
-     * The method is responsible to compute an answer from the server and return
-     * it to the app/user.
+     * The method is responsible to compute an answer from the server.
      *
-     * @return the server answer.
      * @throws IOException
      */
-    public int[] receiveHintFromServer() throws IOException {
+    public void receiveMsgFromServer() throws IOException {
         if (guessBuffer == null || socket == null) {
             throw new NullPointerException(
                     "You must send a guess before"
                     + " trying to receive and answer.");
         }
-
-        int totalBytesRcvd = 0, bytesRcvd;
-        byte[] serverAnswer = new byte[4];
         InputStream in = socket.getInputStream();
         while (totalBytesRcvd < guessBuffer.length) {
             System.out.println(totalBytesRcvd);
@@ -72,19 +72,6 @@ public class MMClient {
 
             totalBytesRcvd += bytesRcvd;
         }
-
-        //socket.close();
-        //converts the received message into int value
-        int message = MMPacket.readBytes(serverAnswer);
-        int[] digits = new int[4];
-        int count = 0;
-        while (message > 0) {
-            digits[count] = message % 10;
-            message = message / 10;
-            count++;
-        }
-        System.out.println(message);
-        return digits;
     }
 
     /**
@@ -94,16 +81,9 @@ public class MMClient {
      * @param guess the user's guess.
      * @throws IOException
      */
-    public void sendGuess(int[] guess) throws IOException {
+    public void sendGuess(List<Integer> guess) throws IOException {
 
-        List<Integer> guessList = new ArrayList<>();
-        //converts the guess string into a list of integers
-        for (int i = 0; i < guess.length; i++) {
-            //int digit = Integer.parseInt(guess.substring(i, i + 1));
-            guessList.add(guess[i]);
-        }
-
-        guessBuffer = MMPacket.writeBytes(guessList);
+        guessBuffer = MMPacket.writeBytes(guess);
         OutputStream out = socket.getOutputStream();
         //send to the server.
         out.write(guessBuffer);
@@ -111,8 +91,20 @@ public class MMClient {
 
     public void startNewGame() throws IOException {
         List<Integer> message = new ArrayList<>();
-        
-        for(int i =0; i < 4; i++){
+
+        for (int i = 0; i < 4; i++) {
+            message.add(0);
+        }
+
+        guessBuffer = MMPacket.writeBytes(message);
+        OutputStream out = socket.getOutputStream();
+        //send to the server.
+        out.write(guessBuffer);
+    }
+    
+    public void startDevGame() throws IOException{
+        List<Integer> message = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
             message.add(9);
         }
         
@@ -121,8 +113,38 @@ public class MMClient {
         //send to the server.
         out.write(guessBuffer);
     }
-    
-    public void closeConnection() throws IOException{
+
+    public boolean isGameWon() throws IOException {
+        int message = MMPacket.readBytes(serverAnswer);
+        if (message == 7777) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isGameOver() throws IOException {
+        int message = MMPacket.readBytes(serverAnswer);
+        if (message == 8888) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public int[] getHints() throws IOException {
+        int message = MMPacket.readBytes(serverAnswer);
+        int[] digits = new int[4];
+        int count = 0;
+        while (message > 0) {
+            digits[count] = message % 10;
+            message = message / 10;
+            count++;
+        }
+        return digits;
+    }
+
+    public void closeConnection() throws IOException {
         this.socket.close();
     }
 
