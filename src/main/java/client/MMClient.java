@@ -61,6 +61,7 @@ public class MMClient {
                     + " trying to receive and answer.");
         }
         InputStream in = socket.getInputStream();
+        serverAnswer = new byte[4];
         while (totalBytesRcvd < guessBuffer.length) {
             System.out.println(totalBytesRcvd);
             bytesRcvd = in.read(serverAnswer, totalBytesRcvd,
@@ -101,13 +102,13 @@ public class MMClient {
         //send to the server.
         out.write(guessBuffer);
     }
-    
-    public void startDevGame() throws IOException{
+
+    public void startDevGame() throws IOException {
         List<Integer> message = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             message.add(9);
         }
-        
+
         guessBuffer = MMPacket.writeBytes(message);
         OutputStream out = socket.getOutputStream();
         //send to the server.
@@ -126,6 +127,15 @@ public class MMClient {
     public boolean isGameOver() throws IOException {
         int message = MMPacket.readBytes(serverAnswer);
         if (message == 8888) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean devMsgReceived() throws IOException {
+        int message = MMPacket.readBytes(serverAnswer);
+        if (message == 6666) {
             return true;
         } else {
             return false;

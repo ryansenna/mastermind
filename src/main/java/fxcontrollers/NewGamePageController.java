@@ -98,13 +98,13 @@ public class NewGamePageController {
         allRowsInPane[currentRow].setDisable(false);
         allRowsInPane[currentRow].setVisible(true);
         // send the guess to the server.
-        try{
+        try {
             client.sendGuess(guess);
-        }catch(IOException ioe){
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             log.error(ioe.getMessage());
             alertMistake("your guess wasnt sent :(");
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
             alertMistake("Something went wrong!");
@@ -112,40 +112,59 @@ public class NewGamePageController {
         // Receive and display answer from the server.
         receiveAnswerFromServer();
     }
-    
-    private void receiveAnswerFromServer(){
-        try{
+
+    private void receiveAnswerFromServer() {
+        try {
             client.receiveMsgFromServer();
-            if(client.isGameWon()){
+            if (client.isGameWon()) {
                 //display nice msg.
-            }
-            else if(client.isGameOver()){
+                alertSuccess("You Won!");
+            } else if (client.isGameOver()) {
+                alertSuccess("You lost!");
                 //display nice msg.
+            } else if(client.devMsgReceived()){
+                alertSuccess("Dev Guess Setted!");
             }
-            else{
+            else {
                 int[] hints = client.getHints();
                 displayHints(hints);
             }
-        }catch(IOException ioe){
+        } catch (IOException ioe) {
             ioe.printStackTrace();
             log.error(ioe.getMessage());
             alertMistake("Server Error, Restart the game.");
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ex.printStackTrace();
             log.error(ex.getMessage());
             alertMistake("Server Error, Reload the game");
         }
     }
-    
-    private void displayHints(int[] hints){
-        
+
+    private void displayHints(int[] hints) {
+        Label l = getCurrentHintBox();
+        String display = "";
+        for(int i : hints)
+            display += i;
+        l.setText(display);
     }
-    private List<Integer> parseBtnTextToGuess(){
+
+    private List<Integer> parseBtnTextToGuess() {
         List<Integer> guess = new ArrayList<>();
-        for(Button button : currentRowOfBtns){
+        for (Button button : currentRowOfBtns) {
             guess.add(Integer.parseInt(button.getText()));
         }
         return guess;
+    }
+
+    private Label getCurrentHintBox() {
+        HBox box = allHintsInPane[currentRow];
+        Label l = null;
+        for (Node n : box.getChildren()) {
+            if (!(n instanceof Group)) {
+                l = (Label) n;
+            }
+        }
+        return l;
     }
 
     private void getCurrentRow() {
