@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+//import org.slf4j.LoggerFactory;
 
 /**
  * Responsible for a session of one or more games with one user
@@ -21,6 +22,8 @@ import java.util.List;
 public class MMServerSession {
 
     private final Socket socket;
+    //private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    private boolean devOptionActivated = false;
 
     public MMServerSession(Socket socket) throws IOException {
         this.socket = socket;
@@ -53,6 +56,14 @@ public class MMServerSession {
         return winMsg;
     }
 
+    private List<Integer> generateDevMsg() {
+        List<Integer> devMsg = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            devMsg.add(6);
+        }
+        return devMsg;
+    }
+
     /**
      * execute game logic to play one or more games with the user
      *
@@ -67,50 +78,56 @@ public class MMServerSession {
 
         //will cycle until client closes the socket
         while ((recvMsgSize = in.read(byteBuffer)) != -1) {
-            int guess = MMPacket.readBytes(byteBuffer);
-            //int guess = 1234;
+            int msgFromClient = MMPacket.readBytesForList(byteBuffer);
+            //log.error(msgFromClient + "");
+
             Board gameBoard = new Board();
 
-            //-2 signifies that the user did not enter a code to use as secret 
-            //code, if it is not equal to -2, use the received msg as code
-            if (guess != 9999) {
-                gameBoard.setCode(guess);
+            //9999 means that the developper option was activated, therefore,
+            //we know the secret code in advance.
+            if (msgFromClient == 9999) {
+                //log.error("DEV OPTION ACTIVATED");
+                devOptionActivated = true;
             }
-
-            // get the secret code for displaying purposes
-            out.write(MMPacket.writeBytes(gameBoard.getCode()));
             byte[] answer;
             List<Integer> hint = new ArrayList<>(4);
-            recvMsgSize = in.read(byteBuffer);
             //inner loop operating 1 game until
             //the game is over or the user gave up.
-            int clientMsgCode = 0;
-            while (!gameBoard.isGameOver()
-                    && recvMsgSize != -1
-                    && clientMsgCode != 9111) {
-                guess = MMPacket.readBytes(byteBuffer);
+            while ((recvMsgSize = in.read(byteBuffer)) != -1) {// get the guess from the user.
+                 int guess = MMPacket.readBytesForList(byteBuffer);
+                //log.error("THE GUESS IS " + guess);
                 gameBoard.setRow(guess);
-
-                //generates hints if the user did not guess right
-                if (!gameBoard.checkWin() && !gameBoard.isGameOver()) {
+                if(guess == 11111111){
+                    out.write(MMPacket.writeBytes(gameBoard.getCode()));
+                    break;
+                }
+                if (devOptionActivated) {// if the dev option was activated, we set the code to be the first try of the user.
+                    // if the dev option wasnt activated, we leave it random.
+                    gameBoard.setCode(guess);
+                    devOptionActivated = false; // I do not want to set this again forhe next tries.
+                    answer = MMPacket.writeBytes(generateDevMsg());
+                    out.write(answer);
+                    continue;
+                }
+                if (gameBoard.checkWin()) {// if the user wins
+                    hint = this.generateWinMsg();
+                    answer = MMPacket.writeBytes(hint);//write the answer back
+                    out.write(answer);
+                    out.write(MMPacket.writeBytes(gameBoard.getCode()));
+                    break;
+                } else if (gameBoard.isGameOver()) {
+                    //generate message about game over.
+                    hint = this.generateLoosingMsg();
+                    answer = MMPacket.writeBytes(hint);
+                    out.write(answer);
+                    out.write(MMPacket.writeBytes(gameBoard.getCode()));
+                    break;
+                } else {// if the user didnt win and the game wasnt over, generate a hint.
                     hint = gameBoard.getHints();
                     answer = MMPacket.writeBytes(hint);
                     out.write(answer);
-                } else {
-                    hint = generateWinMsg();
-                    answer = MMPacket.writeBytes(hint);
-                    out.write(answer);
-                    break;
                 }
-                recvMsgSize = in.read(byteBuffer);// THIS IS THE TROUBLE LINE.
-                clientMsgCode = MMPacket.readBytes(byteBuffer);
             }
-            if (!gameBoard.checkWin()) {
-                hint = generateLoosingMsg();
-                answer = MMPacket.writeBytes(hint);
-                out.write(answer);
-            }
-
         }
 
     }

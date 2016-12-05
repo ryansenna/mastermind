@@ -35,18 +35,13 @@ public class MMPacket {
     }
 
     public static int readBytesForList(byte[] byteBuffer) {
-        // byte[] byteBuffer = new byte[4];
-
-        //  for (int i = 0; i < byteBuffer.length; i++) {
-        //     byteBuffer[i] = (byte) 0xBB;
-        //  }
         List<Integer> message = new ArrayList<>();
         String guess = "";
         for (int i = 0; i < byteBuffer.length; i++) {
             guess += byteBuffer[i];
         }
-        guess = guess.replace("0", "");
-        int decoded = Integer.decode(guess);
+        //guess = guess.replace("0", "");
+        int decoded = Integer.parseInt(guess);
         return decoded;
     }
 

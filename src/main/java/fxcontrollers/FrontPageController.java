@@ -62,12 +62,10 @@ public class FrontPageController {
             stage.setScene(scene);// sets the second page.
             alertSuccess("Connected!");
         } catch (IOException ioe) {
-            ioe.printStackTrace();
             log.error(ioe.getMessage());
             alertMistake("Invalid Connection, try again!");
 
         } catch (Exception ex) {
-            ex.printStackTrace();
             log.error(ex.getMessage());
             alertMistake("Oops! Something went wrong.");
         }

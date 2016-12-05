@@ -20,13 +20,13 @@
             <items>
               <MenuItem mnemonicParsing="false" text="Close" />
                   <MenuItem fx:id="new_game_option" mnemonicParsing="false" onAction="#onNewGameClicked" text="New Game" />
-                  <MenuItem mnemonicParsing="false" text="Give Up" />
+                  <MenuItem fx:id="give_up_option" disable="true" mnemonicParsing="false" onAction="#onGiveUpClicked" text="Give Up" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-                  <MenuItem mnemonicParsing="false" text="How To Play" />
+              <MenuItem mnemonicParsing="false" onAction="#onAboutClicked" text="About" />
+                  <MenuItem mnemonicParsing="false" onAction="#onHowToClicked" text="How To Play" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Settings">
@@ -44,7 +44,6 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -56,35 +55,6 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="10">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Button>
-                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Button>
-                  <Button defaultButton="true" mnemonicParsing="false" onAction="#onSendClicked" text="Send">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                  </Button>
-               </children>
-            </HBox>
             <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="9">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
@@ -114,7 +84,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="8">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="8">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -143,7 +113,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="7">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="7">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -172,7 +142,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="6">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="6">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -201,7 +171,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="5">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="5">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -230,7 +200,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="4">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -259,7 +229,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="3">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -288,7 +258,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="2">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="2">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -317,7 +287,7 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="1">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false" GridPane.rowIndex="1">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
@@ -346,33 +316,33 @@
                   </Button>
                </children>
             </HBox>
-            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
+            <HBox alignment="CENTER" disable="true" prefHeight="100.0" prefWidth="200.0" spacing="10.0" visible="false">
                <children>
-                  <Button mnemonicParsing="false">
+                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false">
+                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false">
+                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false">
+                  <Button mnemonicParsing="false" onAction="#onOptionAssigned">
                      <font>
                         <Font size="18.0" />
                      </font>
                   </Button>
-                  <Label fx:id="win_lose_result">
+                  <Button defaultButton="true" mnemonicParsing="false" onAction="#onSendClicked" text="Send">
                      <font>
-                        <Font size="24.0" />
+                        <Font size="18.0" />
                      </font>
-                  </Label>
+                  </Button>
                </children>
             </HBox>
          </children>
@@ -583,7 +553,7 @@
    <bottom>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Label text="Designed and Projected By Ryan Sena">
+            <Label text="Designed By Ryan Sena">
                <font>
                   <Font name="Arial Bold" size="24.0" />
                </font>

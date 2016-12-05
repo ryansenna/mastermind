@@ -119,9 +119,11 @@ public class Board {
      */
     public void setCode(int code) {
         int[] digits = this.splitRow(code);
+        List<Integer> newCode = new ArrayList<>();
         for (int i = 0; i < digits.length; i++) {
-            this.code.add(digits[i]);
+            newCode.add(digits[i]);
         }
+        this.code = newCode;
     }
 
     /**
