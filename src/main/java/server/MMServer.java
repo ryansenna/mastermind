@@ -28,9 +28,9 @@ public class MMServer {
         
         while(true){
             Socket cSocket=sSocket.accept();
-            
             MMServerSession session = new MMServerSession(cSocket);
-            
+            Thread thr = new Thread(session);
+            thr.start();    
         }
     }
 }

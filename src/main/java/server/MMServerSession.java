@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author Hau Gilles Che, Denys Melyukhov, Realanderson Sena
  */
-public class MMServerSession {
+public class MMServerSession implements Runnable {
 
     private final Socket socket;
     //private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
@@ -27,7 +27,15 @@ public class MMServerSession {
 
     public MMServerSession(Socket socket) throws IOException {
         this.socket = socket;
-        playGames();
+    }
+
+    @Override
+    public void run() {
+        try {
+            playGames();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 
     /**
@@ -94,10 +102,10 @@ public class MMServerSession {
             //inner loop operating 1 game until
             //the game is over or the user gave up.
             while ((recvMsgSize = in.read(byteBuffer)) != -1) {// get the guess from the user.
-                 int guess = MMPacket.readBytesForList(byteBuffer);
+                int guess = MMPacket.readBytesForList(byteBuffer);
                 //log.error("THE GUESS IS " + guess);
                 gameBoard.setRow(guess);
-                if(guess == 11111111){
+                if (guess == 11111111) {
                     out.write(MMPacket.writeBytes(gameBoard.getCode()));
                     break;
                 }
