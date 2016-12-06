@@ -66,7 +66,8 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader();
 
         // Set the location of the fxml file in the FXMLLoader
-        loader.setLocation(this.getClass().getResource("/fxml/NewGamePage.fxml"));
+        loader.setLocation(this.getClass().
+                getResource("/fxml/NewGamePage.fxml"));
 
         // Parent is the base class for all nodes that have children in the
         // scene graph such as AnchorPane and most other containers

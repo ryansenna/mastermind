@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package client;
 
 import java.net.*;
@@ -16,7 +12,7 @@ import server.MMPacket;
  * This class is the Client class, the one that will receive the guesses from
  * the MasterMind app and submit to the Server.
  *
- * @author Railanderson Sena
+ * @author Ryan Sena
  */
 public class MMClient {
 

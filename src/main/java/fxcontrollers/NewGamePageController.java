@@ -40,7 +40,8 @@ public class NewGamePageController {
     private GridPane grid_pane_choices;
     @FXML
     private GridPane hint_grid;
-    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    private final org.slf4j.Logger log = 
+            LoggerFactory.getLogger(this.getClass().getName());
     @FXML
     private MenuItem new_game_option;
     @FXML
@@ -97,17 +98,19 @@ public class NewGamePageController {
     }
 
     /**
-     * This method will clear all the fields from the game page in order to start
-     * a new game.
+     * This method will clear all the fields 
+     * from the game page in order to start a new game.
      */
     private void clear() {
         currentRow = 0;// reset the current row to 0.
-        log.error("THE LENGTH OF ALLROWS INPANE IS " + this.allRowsInPane.length);
+        log.error("THE LENGTH OF ALLROWS INPANE IS " 
+                + this.allRowsInPane.length);
         for (HBox h : allRowsInPane) {
             if (h != null) {
                 h.setDisable(true);// disable all the rows.
                 h.setVisible(false);
-                for (Node n : h.getChildren()) {// set the text of all buttons to be empty again.
+                // set the text of all buttons to be empty again.
+                for (Node n : h.getChildren()) {
                     if (n instanceof Button) {
                         Button b = (Button) n;
                         if (!b.getText().equalsIgnoreCase("send")) {
@@ -133,9 +136,9 @@ public class NewGamePageController {
     }
     /**
      * This method get all HBoxes from a given grid pane
-     * in my case I have 2 grid panes that I need to change their stae every time,
-     * the grid pane that holds all the user guesses and the grid pane to 
-     * display the hints.
+     * in my case I have 2 grid panes that I need to change 
+     * their stae every time,the grid pane that holds all the user 
+     * guesses and the grid pane to display the hints.
      * @param pane
      * @return 
      */
@@ -200,14 +203,16 @@ public class NewGamePageController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setContentText("This Game is brought to you by Ryan Sena \n"
-                + "Master mind is a normal casual game to pass the time and have fun. \n"
+                + "Master mind is a normal casual game to pass the "
+                + "time and have fun. \n"
                 + "I hope you have fun playing it.\n"
                 + "Regards, Ryan.");
         alert.showAndWait();
         
     }
     /**
-     * This method will ask the client to give up and end the game to start a new one.
+     * This method will ask the client to give up 
+     * and end the game to start a new one.
      * @param event 
      */
     @FXML
@@ -235,12 +240,16 @@ public class NewGamePageController {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("How To Play Master Mind");
         alert.setContentText("The Computer hides a secret. \n"
-                + "I designated you the task to break and discover this secret. \n"
+                + "I designated you the task to break and discover "
+                + "this secret. \n"
                 + "You have 10 tries to discover the computer's secret. \n"
-                + "On your right, you will see empty spaces, the computer will \n"
+                + "On your right, you will see empty spaces,"
+                + "the computer will \n"
                 + "tell you how close you are by sending you hints.\n"
-                + "1 means you got one of the 4 numbers right on the right spot.\n"
-                + "2 means you got one of the 4 numbers right on the wrong spot. \n"
+                + "1 means you got one of the 4 numbers right on "
+                + "the right spot.\n"
+                + "2 means you got one of the 4 numbers right on "
+                + "the wrong spot. \n"
                 + "Your mind is your weapon! \n"
                 + "Break The Master Mind!");
         alert.showAndWait();
@@ -322,8 +331,10 @@ public class NewGamePageController {
         receiveAnswerFromServer();
     }
     /**
-     * This method will ask the client to ask a developer session with the server.
-     * Meaning that the first guess sent will be the the master mind secret code.
+     * This method will ask the client to ask a 
+     * developer session with the server.
+     * Meaning that the first guess sent will be 
+     * the the master mind secret code.
      * @param event 
      */
     @FXML
@@ -368,14 +379,16 @@ public class NewGamePageController {
             if (client.isGameWon()) {
                 //display nice msg.
                 int secretAnswer = client.getSecretAnswer();
-                alertSuccess("You Won! The Master Mind Code is " + secretAnswer);
+                alertSuccess("You Won! The Master Mind Code is " 
+                        + secretAnswer);
                 new_game_option.setDisable(false);
                 test_dev_option.setDisable(false);
                 give_up_option.setDisable(true);
                 clear();
             } else if (client.isGameOver()) {
                 int secretAnswer = client.getSecretAnswer();
-                alertSuccess("You lost! The Master Mind Code is " + secretAnswer);
+                alertSuccess("You lost! The Master Mind Code is " 
+                        + secretAnswer);
                 //display nice msg.
                 new_game_option.setDisable(false);
                 test_dev_option.setDisable(false);

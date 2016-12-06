@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package server;
 
 import business.Board;
@@ -12,23 +7,28 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory;
 
 /**
- * Responsible for a session of one or more games with one user
+ * This class will simulate a session for each client.
+ * For example, when a client sends the message to connect, a session starts.
  *
- * @author Hau Gilles Che, Denys Melyukhov, Realanderson Sena
+ * @author Ryan Sena
  */
 public class MMServerSession implements Runnable {
 
     private final Socket socket;
-    //private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
     private boolean devOptionActivated = false;
+    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
     public MMServerSession(Socket socket) throws IOException {
         this.socket = socket;
     }
 
+    /**
+     * This is the method responsible to run in the background when start is 
+     * invoked.
+     */
     @Override
     public void run() {
         try {
@@ -63,7 +63,10 @@ public class MMServerSession implements Runnable {
         }
         return winMsg;
     }
-
+    /**
+     * generates a message to the user that it is a developer game.
+     * @return 
+     */
     private List<Integer> generateDevMsg() {
         List<Integer> devMsg = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
@@ -87,14 +90,14 @@ public class MMServerSession implements Runnable {
         //will cycle until client closes the socket
         while ((recvMsgSize = in.read(byteBuffer)) != -1) {
             int msgFromClient = MMPacket.readBytesForList(byteBuffer);
-            //log.error(msgFromClient + "");
+            log.error(msgFromClient + "");
 
             Board gameBoard = new Board();
 
             //9999 means that the developper option was activated, therefore,
             //we know the secret code in advance.
             if (msgFromClient == 9999) {
-                //log.error("DEV OPTION ACTIVATED");
+                log.error("DEV OPTION ACTIVATED");
                 devOptionActivated = true;
             }
             byte[] answer;
@@ -103,7 +106,7 @@ public class MMServerSession implements Runnable {
             //the game is over or the user gave up.
             while ((recvMsgSize = in.read(byteBuffer)) != -1) {// get the guess from the user.
                  int guess = MMPacket.readBytesForList(byteBuffer);
-                //log.error("THE GUESS IS " + guess);
+                log.error("THE GUESS IS " + guess);
                 gameBoard.setRow(guess);
                 if(guess == 11111111){
                     out.write(MMPacket.writeBytes(gameBoard.getCode()));

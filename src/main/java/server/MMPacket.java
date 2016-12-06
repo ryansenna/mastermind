@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Responsible for reading and writing byte arrays used for communication
- * between the client and the server
+ * This class is responsible for reading and writing byte arrays 
+ * used for communication between the client and the server.
  *
- * @author Hau Gilles Che, Denys Melyukhov, Realanderson Sena
+ * @author Ryan Sena
  */
 public class MMPacket {
 
@@ -33,19 +33,19 @@ public class MMPacket {
         guess = guess.replace("0", "");
         return (!guess.isEmpty() ? Integer.parseInt(guess) : -2);
     }
-
+    /**
+     * This method is an alternate version for readBytes
+     * where it is not needed to replace the 0 by empty strings.
+     * 
+     * @param byteBuffer
+     * @return 
+     */
     public static int readBytesForList(byte[] byteBuffer) {
-        // byte[] byteBuffer = new byte[4];
-
-        //  for (int i = 0; i < byteBuffer.length; i++) {
-        //     byteBuffer[i] = (byte) 0xBB;
-        //  }
         List<Integer> message = new ArrayList<>();
         String guess = "";
         for (int i = 0; i < byteBuffer.length; i++) {
             guess += byteBuffer[i];
         }
-        //guess = guess.replace("0", "");
         int decoded = Integer.parseInt(guess);
         return decoded;
     }
@@ -59,9 +59,6 @@ public class MMPacket {
     public static byte[] writeBytes(List<Integer> message) {
         byte[] byteBuffer = new byte[4];
 
-        //for (int i = 0; i < byteBuffer.length; i++) {
-        //    byteBuffer[i] = (byte) 0xBB;
-        //}
         for (int i = 0; i < message.size(); i++) {
             byteBuffer[i] = Byte.parseByte(Integer.toHexString(
                     message.get(i)), 16);

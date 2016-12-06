@@ -36,13 +36,15 @@ public class FrontPageController {
     private ConfigBean config;
     private boolean connected;
 
-    private final org.slf4j.Logger log = LoggerFactory.getLogger(this.getClass().getName());
+    private final org.slf4j.Logger log = 
+            LoggerFactory.getLogger(this.getClass().getName());
 
     public FrontPageController() {
         connected = false;
     }
 
-    public void setSceneStateSecPage(Scene scene, Stage stage, NewGamePageController gpc) {
+    public void setSceneStateSecPage(Scene scene, Stage stage, 
+            NewGamePageController gpc) {
         this.scene = scene;
         this.stage = stage;
         this.gpc = gpc;
