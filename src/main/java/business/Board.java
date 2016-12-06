@@ -77,6 +77,7 @@ public class Board {
         int currentRow = rows[guessCount - 1];
         int rightCounter = 0;
         List<Integer> hints = new ArrayList<Integer>();
+        List<Integer> alreadyThere = new ArrayList<>();
         int[] rowsDigits = this.splitRow(currentRow);
 
         for (int i = 0; i < code.size(); i++) {
@@ -88,10 +89,11 @@ public class Board {
 
         }
         for (int i = 0; i < code.size(); i++) {
-            if (remainingCode.contains(rowsDigits[i])) {
+            if (remainingCode.contains(rowsDigits[i]) && !alreadyThere.contains(rowsDigits[i])) {
                 hints.add(2);
+                alreadyThere.add(rowsDigits[i]);
             }
-
+            
         }
 
         for (int j = 0; j < rightCounter; j++) {

@@ -102,10 +102,10 @@ public class MMServerSession implements Runnable {
             //inner loop operating 1 game until
             //the game is over or the user gave up.
             while ((recvMsgSize = in.read(byteBuffer)) != -1) {// get the guess from the user.
-                int guess = MMPacket.readBytesForList(byteBuffer);
+                 int guess = MMPacket.readBytesForList(byteBuffer);
                 //log.error("THE GUESS IS " + guess);
                 gameBoard.setRow(guess);
-                if (guess == 11111111) {
+                if(guess == 11111111){
                     out.write(MMPacket.writeBytes(gameBoard.getCode()));
                     break;
                 }
